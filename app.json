@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Bingo 90 Tickets",
+    "slug": "bingo-app",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "android": {
+      "package": "com.leeva.bingo90tickets",
+      "versionCode": 74
+    }
+  }
+}
