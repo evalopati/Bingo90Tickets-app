@@ -1,0 +1,72 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, Alert, ActivityIndicator } from 'react-native';
+import * as RNIap from 'react-native-iap';
+
+// Replace with your actual Google Play Subscription SKU ID
+const subscriptionSKUs = ['bingo_monthly_sub']; 
+
+export const useBingoSubscription = () => {
+      const [subscribed, setSubscribed] = useState(false);
+        const [loading, setLoading] = useState(true);
+
+          useEffect(() => {
+                let purchaseUpdateSubscription;
+                    let purchaseErrorSubscription;
+
+                        const initIAP = async () => {
+                                  try {
+                                            await RNIap.initConnection();
+                                                    
+                                                            // Listen for incoming purchases
+                                                                    purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(async (purchase) => {
+                                                                                  const receipt = purchase.transactionReceipt;
+                                                                                            if (receipt) {
+                                                                                                            await RNIap.finishTransaction({ purchase, isConsumable: false });
+                                                                                                                        setSubscribed(true);
+                                                                                                                                    Alert.alert("Success", "Subscription activated!");
+                                                                                            }
+                                                                    });
+
+                                                                            purchaseErrorSubscription = RNIap.purchaseErrorListener((error) => {
+                                                                                          console.warn('Purchase error:', error);
+                                                                            });
+
+                                                                                    // Check active purchases on launch
+                                                                                            const availablePurchases = await RNIap.getAvailablePurchases();
+                                                                                                    const hasActiveSub = availablePurchases.some(
+                                                                                                                  (p) => subscriptionSKUs.includes(p.productId)
+                                                                                                    );
+                                                                                                            setSubscribed(hasActiveSub);
+                                  } catch (err) {
+                                            console.warn('IAP Initialization Error:', err);
+                                  } finally {
+                                            setLoading(false);
+                                  }
+                        };
+
+                            initIAP();
+
+                                return () => {
+                                          if (purchaseUpdateSubscription) purchaseUpdateSubscription.remove();
+                                                if (purchaseErrorSubscription) purchaseErrorSubscription.remove();
+                                                      RNIap.endConnection();
+                                };
+          }, []);
+
+            const handleBuySubscription = async (sku) => {
+                    try {
+                              await RNIap.requestSubscription({ sku });
+                    } catch (err) {
+                              Alert.alert("Subscription Failed", err.message);
+                    }
+            };
+
+              return { subscribed, loading, handleBuySubscription };
+};
+
+                                                                                            }
+                                                                    })
+                                  }
+                        }
+          })
+}
