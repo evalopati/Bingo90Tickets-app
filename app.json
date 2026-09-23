@@ -8,5 +8,13 @@
       "package": "com.leeva.bingo90tickets",
       "versionCode": 74
     }
+  
+
+    "extra": {
+            "eas": {
+                    "projectId": "d9d114e3-4331-4e56-9f6d-b4349c15079a"
+                          }
+                              }
+
+    }
   }
-}
